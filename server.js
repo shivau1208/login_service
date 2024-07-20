@@ -9,7 +9,7 @@ const client = require('./redis');
 const { serialize } = require('cookie');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 443;
 
 app.use(bodyParser.json());
 app.use(cors());
