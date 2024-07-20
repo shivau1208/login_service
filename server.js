@@ -110,6 +110,6 @@ app.get('/protected', authenticateJWT, (req, res) => {
     res.status(200).json({ message: 'You have accessed a protected route' });
 });
 
-app.listen(PORT, () => {
+app.listen(3000, () => {
     console.log(`Server is running on port ${PORT}`);
 });
