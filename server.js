@@ -12,13 +12,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use(cors());
-app.use((req,res,next)=>{
-    res.setHeader('Access-Control-Allow-Origin','*');
-    res.setHeader('Access-Control-Allow-Credentials', true)
-    res.setHeader('Access-Control-Allow-Headers','Content-Type','Authorization')
-    next()
-})
+app.use(cors({
+  origin: '*', // your local development server
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
+}));
+
 
 
 // Secret key for JWT
@@ -63,7 +62,6 @@ app.post('/signup', async(req, res) => {
 // Login endpoint
 app.post('/login', async(req, res) => {
     const {email,password} = (req.body);
-    console.log({email,password});
     const prismaClient = new PrismaClient()
     const user = await prismaClient.users.findUnique({
         where:{
