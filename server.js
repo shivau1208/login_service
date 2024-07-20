@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(cors({
-  origin: '*', // your local development server
+  origin: 'http://localhost:3000', // your local development server
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
 }));
