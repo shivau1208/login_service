@@ -13,6 +13,10 @@ const PORT = 3000;
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use((req,res,next)=>{
+    res.setHeader('Access-Control-Allow-Origin','*');
+    res.setHeader('Access-Control-Allow-Headers','Content-Type','Authorization')
+})
 
 
 // Secret key for JWT
@@ -76,7 +80,7 @@ app.post('/login', async(req, res) => {
                 secure:process.env.NODE_ENV === 'production',
                 maxAge:'86400',
                 path:'/',
-                sameSite:'strict'
+                sameSite:'none'
             }))
             return res.status(200).json({message:'User logged In successfully!'});
         };
