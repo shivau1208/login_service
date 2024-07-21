@@ -77,7 +77,7 @@ app.post('/login', async(req, res) => {
             })
             res.setHeader('Set-Cookie',serialize('cid',token,{
                 httpOnly:true,
-                secure:process.env.NODE_ENV === 'production',
+                secure:true,
                 maxAge:'86400',
                 path:'/',
                 sameSite:'none'
