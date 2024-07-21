@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(cors({
-  origin: 'https://login-service-xwdp.onrender.com', 
+  origin: ['https://login-service-xwdp.onrender.com','http://localhost:3000'], 
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
 }));
