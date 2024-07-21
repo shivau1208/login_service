@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(cors({
-  origin: 'http://localhost:3000', // your local development server
+  origin: 'https://login-service-xwdp.onrender.com', 
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
 }));
@@ -76,11 +76,18 @@ app.post('/login', async(req, res) => {
                 EX: 60 * 60 * 24 // Expire after 24 hours
             })
             res.setHeader('Set-Cookie',serialize('cid',token,{
-                httpOnly:true,
-                secure:false,
-                maxAge:'86400',
-                path:'/',
-                sameSite:'lax'
+              // can only be accessed by server requests
+              httpOnly: true,
+              // path = where the cookie is valid
+              path: "/",
+              // domain = what domain the cookie is valid on
+               domain: "localhost",
+              // secure = only send cookie over https
+              // secure: false,
+              // sameSite = only send cookie if the request is coming from the same origin
+              sameSite: "lax", // "strict" | "lax" | "none" (secure must be true)
+              // maxAge = how long the cookie is valid for in milliseconds
+              maxAge: 86400, // 1 day
             }))
             return res.status(200).json({message:'User logged In successfully!'});
         };
