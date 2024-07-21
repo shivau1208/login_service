@@ -77,10 +77,10 @@ app.post('/login', async(req, res) => {
             })
             res.setHeader('Set-Cookie',serialize('cid',token,{
                 httpOnly:true,
-                secure:true,
+                secure:false,
                 maxAge:'86400',
                 path:'/',
-                sameSite:'none'
+                sameSite:'lax'
             }))
             return res.status(200).json({message:'User logged In successfully!'});
         };
