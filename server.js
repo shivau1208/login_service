@@ -11,14 +11,9 @@ const { serialize } = require('cookie');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // Set to your client's domain
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
 app.use(bodyParser.json());
 app.use(cors({
-  origin: ['https://login-service-xwdp.onrender.com','http://localhost:3000'], 
+  origin: ['https://login-service-xwdp.onrender.com','http://localhost:3000','https://buymybeer.vercel.app'], 
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
 }));
