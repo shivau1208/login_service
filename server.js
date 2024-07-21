@@ -11,6 +11,11 @@ const { serialize } = require('cookie');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // Set to your client's domain
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
 app.use(bodyParser.json());
 app.use(cors({
   origin: ['https://login-service-xwdp.onrender.com','http://localhost:3000'], 
@@ -75,7 +80,7 @@ app.post('/login', async(req, res) => {
             await client.set('cid',token,{
                 EX: 60 * 60 * 24 // Expire after 24 hours
             })
-            res.setHeader('Set-Cookie',serialize('cid',token,{
+            res.cookie('cid',token,{
               // can only be accessed by server requests
               httpOnly: true,
               // path = where the cookie is valid
@@ -88,7 +93,7 @@ app.post('/login', async(req, res) => {
               sameSite: "lax", // "strict" | "lax" | "none" (secure must be true)
               // maxAge = how long the cookie is valid for in milliseconds
               maxAge: 86400, // 1 day
-            }))
+            })
             return res.status(200).json({message:'User logged In successfully!'});
         };
         return res.status(403).json({message:'Invalid credentials'});
