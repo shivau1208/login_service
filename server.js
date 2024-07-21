@@ -67,6 +67,7 @@ app.post('/signup', async(req, res) => {
 // Login endpoint
 app.post('/login', async(req, res) => {
     const {email,password} = (req.body);
+    console.log({email,password});
     const prismaClient = new PrismaClient()
     const user = await prismaClient.users.findUnique({
         where:{
@@ -80,20 +81,13 @@ app.post('/login', async(req, res) => {
             await client.set('cid',token,{
                 EX: 60 * 60 * 24 // Expire after 24 hours
             })
-            res.cookie('cid',token,{
-              // can only be accessed by server requests
-              httpOnly: true,
-              // path = where the cookie is valid
-              path: "/",
-              // domain = what domain the cookie is valid on
-               domain: "localhost",
-              // secure = only send cookie over https
-              // secure: false,
-              // sameSite = only send cookie if the request is coming from the same origin
-              sameSite: "lax", // "strict" | "lax" | "none" (secure must be true)
-              // maxAge = how long the cookie is valid for in milliseconds
-              maxAge: 86400, // 1 day
-            })
+            res.setHeader('Set-Cookie',serialize('cid',token,{
+                httpOnly:true,
+                secure:process.env.NODE_ENV === 'production',
+                maxAge:'86400',
+                path:'/',
+                sameSite: 'none'
+            }))
             return res.status(200).json({message:'User logged In successfully!'});
         };
         return res.status(403).json({message:'Invalid credentials'});
