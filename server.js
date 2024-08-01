@@ -12,12 +12,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use(cors({
-  origin: ['https://login-service-xwdp.onrender.com','http://localhost:3000','https://buymybeer.vercel.app'], 
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
-}));
-
+// app.use(cors({
+//   origin: ['https://login-service-xwdp.onrender.com','http://localhost:3000','https://buymybeer.vercel.app'], 
+//   credentials: true,
+//   allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
+// }));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://buymybeer.vercel.app'); // Allow your client origin
+  res.header('Access-Control-Allow-Credentials', 'true'); // Allow credentials
+  next();
+});
 
 
 // Secret key for JWT
@@ -78,10 +82,10 @@ app.post('/login', async(req, res) => {
             })
             res.setHeader('Set-Cookie',serialize('cid',token,{
                 httpOnly:true,
-                secure:process.env.NODE_ENV === 'production',
+                secure:true,
                 maxAge:'86400',
                 path:'/',
-                sameSite: 'none'
+                sameSite: 'Lax'
             }))
             return res.status(200).json({message:'User logged In successfully!'});
         };
