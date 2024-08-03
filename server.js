@@ -27,6 +27,7 @@ const JWT_SECRET = process.env.JWT_KEY;
 app.get('/',(req,res)=>{
     res.send('Hello')
 })
+
 app.post('/signup', async(req, res) => {
     const salt = 9;
     const {email,fname,lname,password} = req.body;
@@ -89,7 +90,23 @@ app.post('/login', async(req, res) => {
     return res.status(401).json({message:'User does not exist'});
 });
 
+app.post('/logout', async (req, res) => {
+    try {
+        await client.del('cid'); // Assuming 'cid' is a key in your Redis store
 
+        // Clear the cookie by setting its maxAge to 0
+        res.clearCookie('cid', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+            path: '/'
+        });
+
+        return res.status(200).json({ message: 'User logged out successfully!' });
+    } catch (err) {
+        return res.status(403).json({ message: 'Error in logging out' });
+    }
+});
 // Middleware to protect routes
 const authenticateJWT = (req, res, next) => {
     const token = req.cookies.cid;
