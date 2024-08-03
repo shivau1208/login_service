@@ -10,12 +10,12 @@ const { serialize } = require('cookie');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cookieParser()); // Use cookie-parser middleware
 app.use(bodyParser.json());
 app.use(cors({
-    origin: ['https://login-service-xwdp.onrender.com','http://localhost:3000','https://buymybeer.vercel.app'], 
+    origin: ['https://buymybeer.vercel.app','http://localhost:3000'], 
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
 }));
@@ -76,11 +76,11 @@ app.post('/login', async(req, res) => {
                 EX: 60 * 60 * 24 // Expire after 24 hours
             })
             res.setHeader('Set-Cookie',serialize('cid',token,{
-                httpOnly:false,
-                // secure:process.env.NODE_ENV === 'production',
+                httpOnly:true,
+                secure:true,
                 maxAge:'86400',
                 path:'/',
-                sameSite:'lax'
+                sameSite:'None'
             }))
             return res.status(200).json({message:'User logged In successfully!'});
         };
