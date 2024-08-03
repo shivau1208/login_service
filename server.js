@@ -7,22 +7,18 @@ const cors = require('cors');
 const {PrismaClient} = require('@prisma/client');
 const client = require('./redis');
 const { serialize } = require('cookie');
+const cookieParser = require('cookie-parser');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
+app.use(cookieParser()); // Use cookie-parser middleware
 app.use(bodyParser.json());
 app.use(cors({
-  origin: ['https://buymybeer.vercel.app','http://localhost:3000'], 
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
+    origin: ['https://login-service-xwdp.onrender.com','http://localhost:3000','https://buymybeer.vercel.app'], 
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
 }));
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', 'https://buymybeer.vercel.app'); // Allow your client origin
-//   res.header('Access-Control-Allow-Credentials', 'true'); // Allow credentials
-//   next();
-// });
-
 
 // Secret key for JWT
 const JWT_SECRET = process.env.JWT_KEY;
@@ -80,11 +76,11 @@ app.post('/login', async(req, res) => {
                 EX: 60 * 60 * 24 // Expire after 24 hours
             })
             res.setHeader('Set-Cookie',serialize('cid',token,{
-                secure:process.env.NODE_ENV==='production',
-                httpOnly:true,
+                httpOnly:false,
+                // secure:process.env.NODE_ENV === 'production',
                 maxAge:'86400',
                 path:'/',
-                sameSite: 'None'
+                sameSite:'lax'
             }))
             return res.status(200).json({message:'User logged In successfully!'});
         };
@@ -93,16 +89,15 @@ app.post('/login', async(req, res) => {
     return res.status(401).json({message:'User does not exist'});
 });
 
+
 // Middleware to protect routes
 const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers['cookie'];
-
-    if (!authHeader) {
-        return res.status(401).json({ message: 'No token provided' });
+    const token = req.cookies.cid;
+    
+    if (!token) {
+        return res.status(401).json({ message: 'Malformed token' });
     }
 
-    const token = authHeader.split('=')[1];
-    console.log(token);
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
@@ -117,6 +112,6 @@ app.get('/protected', authenticateJWT, (req, res) => {
     res.status(200).json({ message: 'You have accessed a protected route' });
 });
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
