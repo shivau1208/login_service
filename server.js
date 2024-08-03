@@ -90,8 +90,8 @@ app.post('/login', async(req, res) => {
             // Setting cookie with attributes
             res.cookie('cid', token, {
               secure: true, // Ensures the cookie is only sent over HTTPS
-              httpOnly: true, // Prevents JavaScript access (optional, based on your use case)
-              sameSite: 'Lax', // Adjust based on your application's requirements
+              httpOnly: false, // Prevents JavaScript access (optional, based on your use case)
+              sameSite: 'None', // Adjust based on your application's requirements
               maxAge: 3600000 // Set expiry time (in milliseconds)
             });
             return res.status(200).json({message:'User logged In successfully!'});
