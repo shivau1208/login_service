@@ -80,20 +80,13 @@ app.post('/login', async(req, res) => {
             await client.set('cid',token,{
                 EX: 60 * 60 * 24 // Expire after 24 hours
             })
-            // res.setHeader('Set-Cookie',serialize('cid',token,{
-            //     httpOnly:true,
-            //     secure:true,
-            //     maxAge:'86400',
-            //     path:'/',
-            //     sameSite: 'Lax'
-            // }))
-            // Setting cookie with attributes
-            res.cookie('cid', token, {
-              secure: true, // Ensures the cookie is only sent over HTTPS
-              httpOnly: true, // Prevents JavaScript access (optional, based on your use case)
-              sameSite: 'None', // Adjust based on your application's requirements
-              maxAge: 3600000 // Set expiry time (in milliseconds)
-            });
+            res.setHeader('Set-Cookie',serialize('cid',token,{
+                httpOnly:true,
+                secure:true,
+                maxAge:'86400',
+                path:'/',
+                sameSite: 'none'
+            }))
             return res.status(200).json({message:'User logged In successfully!'});
         };
         return res.status(403).json({message:'Invalid credentials'});
