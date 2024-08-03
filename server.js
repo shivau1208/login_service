@@ -85,7 +85,8 @@ app.post('/login', async(req, res) => {
                 secure:true,
                 maxAge:'86400',
                 path:'/',
-                sameSite: 'none'
+                domain:'https://buymybeer.vercel.app',
+                sameSite: 'None'
             }))
             return res.status(200).json({message:'User logged In successfully!'});
         };
