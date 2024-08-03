@@ -66,7 +66,6 @@ app.post('/signup', async(req, res) => {
 // Login endpoint
 app.post('/login', async(req, res) => {
     const {email,password} = (req.body);
-    console.log({email,password});
     const prismaClient = new PrismaClient()
     const user = await prismaClient.users.findUnique({
         where:{
@@ -96,11 +95,14 @@ app.post('/login', async(req, res) => {
 
 // Middleware to protect routes
 const authenticateJWT = (req, res, next) => {
-    const token = req.header('Authorization');
-    if (!token) {
+    const authHeader = req.headers['cookie'];
+
+    if (!authHeader) {
         return res.status(401).json({ message: 'No token provided' });
     }
 
+    const token = authHeader.split('=')[1];
+    console.log(token);
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
