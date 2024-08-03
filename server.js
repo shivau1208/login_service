@@ -81,11 +81,10 @@ app.post('/login', async(req, res) => {
                 EX: 60 * 60 * 24 // Expire after 24 hours
             })
             res.setHeader('Set-Cookie',serialize('cid',token,{
+                secure:process.env.NODE_ENV==='production',
                 httpOnly:true,
-                secure:true,
                 maxAge:'86400',
                 path:'/',
-                domain:'https://buymybeer.vercel.app',
                 sameSite: 'None'
             }))
             return res.status(200).json({message:'User logged In successfully!'});
