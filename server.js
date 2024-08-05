@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-// const dotenv = require('dotenv').config()
 const cors = require('cors');
 const {PrismaClient} = require('@prisma/client');
 const client = require('./redis');
@@ -10,12 +9,12 @@ const { serialize } = require('cookie');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cookieParser()); // Use cookie-parser middleware
 app.use(bodyParser.json());
 app.use(cors({
-    origin: ['https://buymybeer.vercel.app','http://localhost:3000'], 
+    origin: ['https://login-service-xwdp.onrender.com','http://localhost:3000','https://buymybeer.vercel.app'], 
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
 }));
@@ -27,7 +26,6 @@ const JWT_SECRET = process.env.JWT_KEY;
 app.get('/',(req,res)=>{
     res.send('Hello')
 })
-
 app.post('/signup', async(req, res) => {
     const salt = 9;
     const {email,fname,lname,password} = req.body;
@@ -73,16 +71,13 @@ app.post('/login', async(req, res) => {
         const compare = await bcrypt.compare(password,user?.password)
         if(compare) {
             const token = jwt.sign({user:req?.body?.email},process.env.JWT_KEY,{expiresIn:'86400s'});
-            await client.set('cid',token,{
-                EX: 60 * 60 * 24 // Expire after 24 hours
-            })
-            res.setHeader('Set-Cookie',serialize('cid',token,{
+            res.cookie('cid',token,{
                 httpOnly:true,
                 secure:true,
-                maxAge:'86400',
+                maxAge:86400000,
                 path:'/',
                 sameSite:'None'
-            }))
+            })
             return res.status(200).json({message:'User logged In successfully!'});
         };
         return res.status(403).json({message:'Invalid credentials'});
@@ -92,25 +87,22 @@ app.post('/login', async(req, res) => {
 
 app.post('/logout', async (req, res) => {
     try {
-        await client.del('cid'); // Assuming 'cid' is a key in your Redis store
-
         // Clear the cookie by setting its maxAge to 0
-        res.clearCookie('cid', {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            path: '/'
-        });
-
+        res.clearCookie('cid',{
+            httpOnly:true,
+            secure:true,
+            path:'/',
+            sameSite:'None'
+        })
         return res.status(200).json({ message: 'User logged out successfully!' });
     } catch (err) {
         return res.status(403).json({ message: 'Error in logging out' });
     }
 });
+
 // Middleware to protect routes
 const authenticateJWT = (req, res, next) => {
     const token = req.cookies.cid;
-    
     if (!token) {
         return res.status(401).json({ message: 'Malformed token' });
     }
