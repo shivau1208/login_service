@@ -76,7 +76,8 @@ app.post('/login', async(req, res) => {
                 secure:true,
                 maxAge:86400000,
                 path:'/',
-                sameSite:'None'
+                sameSite:'None',
+                partitioned: true
             })
             return res.status(200).json({message:'User logged In successfully!'});
         };
