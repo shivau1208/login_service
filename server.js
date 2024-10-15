@@ -85,17 +85,15 @@ app.post('/login', async(req, res) => {
     return res.status(401).json({message:'User does not exist'});
 });
 
-app.get('/logout', async (req, res) => {
+app.post('/logout', async (req, res) => {
     try {
-        // Clear the cookie by setting its maxAge to 0
-        // res.cookie('cid',{
-        //     httpOnly:true,
-        //     secure:true,
-        //     maxAge:0,
-        //     path:'/',
-        //     sameSite:'None'
-        // })
-        document.cookie = "cid=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=login-service-xwdp.onrender.com";
+        // Clear the cookie
+        res.clearCookie('cid', {
+            httpOnly: true,      // Ensures cookie is only accessible by the web server
+            secure: true,        // Ensures the cookie is only sent over HTTPS
+            path: '/',           // Specify the path the cookie applies to
+            sameSite: 'None'     // To allow third-party usage, 'None' is required for cross-origin
+        });
         return res.status(200).json({ message: 'User logged out successfully!' });
     } catch (err) {
         return res.status(403).json({ message: 'Error in logging out' });
