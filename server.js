@@ -92,6 +92,7 @@ app.post('/logout', async (req, res) => {
         res.clearCookie('cid',{
             httpOnly:true,
             secure:true,
+            maxAge:0,
             path:'/',
             sameSite:'None'
         })
