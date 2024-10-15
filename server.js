@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const {PrismaClient} = require('@prisma/client');
-const client = require('./redis');
 const { serialize } = require('cookie');
 const cookieParser = require('cookie-parser');
 
@@ -89,13 +88,14 @@ app.post('/login', async(req, res) => {
 app.post('/logout', async (req, res) => {
     try {
         // Clear the cookie by setting its maxAge to 0
-        res.clearCookie('cid',{
-            httpOnly:true,
-            secure:true,
-            maxAge:0,
-            path:'/',
-            sameSite:'None'
-        })
+        // res.clearCookie('cid',{
+        //     httpOnly:true,
+        //     secure:true,
+        //     maxAge:0,
+        //     path:'/',
+        //     sameSite:'None'
+        // })
+        document.cookie = cid + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;";
         return res.status(200).json({ message: 'User logged out successfully!' });
     } catch (err) {
         return res.status(403).json({ message: 'Error in logging out' });
