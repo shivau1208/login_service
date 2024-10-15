@@ -92,7 +92,8 @@ app.post('/logout', async (req, res) => {
             httpOnly: true,      // Ensures cookie is only accessible by the web server
             secure: true,        // Ensures the cookie is only sent over HTTPS
             path: '/',           // Specify the path the cookie applies to
-            sameSite: 'None'     // To allow third-party usage, 'None' is required for cross-origin
+            sameSite: 'None',     // To allow third-party usage, 'None' is required for cross-origin
+            partitioned: true     // Match the partitioned attribute
         });
         return res.status(200).json({ message: 'User logged out successfully!' });
     } catch (err) {
