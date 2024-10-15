@@ -88,7 +88,7 @@ app.post('/login', async(req, res) => {
 app.post('/logout', async (req, res) => {
     try {
         // Clear the cookie by setting its maxAge to 0
-        res.clearCookie('cid',{
+        res.cookie('cid',{
             httpOnly:true,
             secure:true,
             maxAge:0,
