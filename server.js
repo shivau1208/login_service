@@ -56,6 +56,35 @@ app.post('/signup', async(req, res) => {
 
     }
 });
+app.post('/gsignup', async(req, res) => {
+    const {email,fname,lname,gsignin} = req.body;
+    const prismaClient = new PrismaClient()
+    var rows = await prismaClient.users.count()
+    if(rows < 11){
+        let response = await prismaClient.users.create({
+            data: {
+                'email':email,
+                'fname':fname,
+                'lname':lname,
+                'type': gsignin
+            }
+        })
+        if(response){
+            return res.send({
+                status:'success',
+                message:'User created successfully'
+            })
+        }
+        return res.send({
+            message:'User already exist,Please add different Email Id'
+        })
+    }else{
+        return res.send({
+            message:'Reached max limit to create'
+        });
+
+    }
+});
 
 // Login endpoint
 app.post('/login', async(req, res) => {
