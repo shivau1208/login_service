@@ -114,7 +114,7 @@ app.post('/login', async(req, res) => {
     return res.status(401).json({message:'User does not exist'});
 });
 
-app.post('/logout', async (req, res) => {
+app.get('/logout', async (req, res) => {
     try {
         // Clear the cookie
         res.clearCookie('cid', {
