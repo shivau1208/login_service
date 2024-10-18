@@ -56,8 +56,8 @@ app.post('/signup', async(req, res) => {
 
     }
 });
-app.post('/gsignup', async(req, res) => {
-    const {email,fname,lname,gsignin} = req.body;
+app.post('/oauth', async(req, res) => {
+    const {email,fname,lname,providerId} = req.body;
     const prismaClient = new PrismaClient()
     var rows = await prismaClient.users.count()
     if(rows < 11){
@@ -66,7 +66,7 @@ app.post('/gsignup', async(req, res) => {
                 'email':email,
                 'fname':fname,
                 'lname':lname,
-                'type': gsignin
+                'provider': providerId
             }
         })
         if(response){
