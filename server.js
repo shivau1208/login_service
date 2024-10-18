@@ -31,7 +31,7 @@ app.post('/signup', async(req, res) => {
     const passw = await bcrypt.hash(password,salt)
     const prismaClient = new PrismaClient()
     var rows = await prismaClient.users.count()
-    if(rows < 2){
+    if(rows < 11){
         let response = await prismaClient.users.create({
             data: {
                 'email':email,
