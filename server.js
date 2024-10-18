@@ -56,7 +56,7 @@ app.post('/signup', async(req, res) => {
     }
 });
 app.post('/oauth', async(req, res) => {
-    const {email,fname,lname,providerId} = req.body;
+    const {email,fname,lname,password,providerId} = req.body;
     var rows = await prismaClient.users.count()
     if(rows < 11){
         let response = await prismaClient.users.create({
@@ -64,6 +64,7 @@ app.post('/oauth', async(req, res) => {
                 'email':email,
                 'fname':fname,
                 'lname':lname,
+                'password':password,
                 'provider': providerId
             }
         })
