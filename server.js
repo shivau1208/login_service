@@ -20,7 +20,7 @@ app.use(cors({
 
 // Secret key for JWT
 const JWT_SECRET = process.env.JWT_KEY;
-
+const prismaClient = new PrismaClient()
 // Register endpoint
 app.get('/',(req,res)=>{
     res.send('Hello')
@@ -29,7 +29,6 @@ app.post('/signup', async(req, res) => {
     const salt = 9;
     const {email,fname,lname,password} = req.body;
     const passw = await bcrypt.hash(password,salt)
-    const prismaClient = new PrismaClient()
     var rows = await prismaClient.users.count()
     if(rows < 11){
         let response = await prismaClient.users.create({
@@ -58,7 +57,6 @@ app.post('/signup', async(req, res) => {
 });
 app.post('/oauth', async(req, res) => {
     const {email,fname,lname,providerId} = req.body;
-    const prismaClient = new PrismaClient()
     var rows = await prismaClient.users.count()
     if(rows < 11){
         let response = await prismaClient.users.create({
