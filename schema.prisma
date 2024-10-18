@@ -21,6 +21,7 @@ model Users {
   fname String
   lname String
   password String
+  provider String
   role Role @default(USER)
 }
 enum Role {
