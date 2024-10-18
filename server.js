@@ -40,16 +40,15 @@ app.post('/signup', async(req, res) => {
             }
         })
         if(response){
-            return res.send({
-                status:'success',
+            return res.status(200).json({
                 message:'User created successfully'
             })
         }
-        return res.send({
+        return res.status(409).json({
             message:'User already exist,Please add different Email Id'
         })
     }else{
-        return res.send({
+        return res.status(400).json({
             message:'Reached max limit to create'
         });
 
@@ -69,16 +68,15 @@ app.post('/oauth', async(req, res) => {
             }
         })
         if(response){
-            return res.send({
-                status:'success',
+            return res.status(200).json({
                 message:'User created successfully'
             })
         }
-        return res.send({
+        return res.status(409).json({
             message:'User already exist,Please add different Email Id'
         })
     }else{
-        return res.send({
+        return res.status(400).json({
             message:'Reached max limit to create'
         });
 
