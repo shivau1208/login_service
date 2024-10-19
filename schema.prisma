@@ -20,8 +20,8 @@ model Users {
   email String @unique
   fname String
   lname String
-  password String
-  provider String
+  password String?
+  provider String?
   role Role @default(USER)
 }
 enum Role {

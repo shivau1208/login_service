@@ -4,11 +4,16 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const {PrismaClient} = require('@prisma/client');
-const { serialize } = require('cookie');
 const cookieParser = require('cookie-parser');
+// const MongoClient = require('mongodb').MongoClient;
+// const url = process.env.DATABASE_URL;
+
+
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
 
 app.use(cookieParser()); // Use cookie-parser middleware
 app.use(bodyParser.json());
@@ -20,33 +25,38 @@ app.use(cors({
 
 // Secret key for JWT
 const JWT_SECRET = process.env.JWT_KEY;
-const prismaClient = new PrismaClient()
+
 // Register endpoint
 app.get('/',(req,res)=>{
     res.send('Hello')
 })
 app.post('/signup', async(req, res) => {
-    const salt = 9;
     const {email,fname,lname,password} = req.body;
+    const salt = 9;
     const passw = await bcrypt.hash(password,salt)
-    var rows = await prismaClient.users.count()
+    const prismaClient = new PrismaClient()
+    let rows = await prismaClient.users.count();
+    
     if(rows < 11){
-        let response = await prismaClient.users.create({
-            data: {
-                'email':email,
-                'fname':fname,
-                'lname':lname,
-                'password':passw
-            }
-        })
-        if(response){
+        try{
+            await prismaClient.users.create({
+                data: {
+                    'email':email,
+                    'fname':fname,
+                    'lname':lname,
+                    'password':passw
+                }
+            })
             return res.status(200).json({
                 message:'User created successfully'
             })
+        }catch(error){
+            if (error.code === 'P2002' && error.meta.target.includes('email')) {
+                return res.status(409).json({
+                    message:'User already exist,Please add different Email Id'
+                })
+            }
         }
-        return res.status(409).json({
-            message:'User already exist,Please add different Email Id'
-        })
     }else{
         return res.status(400).json({
             message:'Reached max limit to create'
@@ -56,25 +66,29 @@ app.post('/signup', async(req, res) => {
 });
 app.post('/oauth', async(req, res) => {
     const {email,fname,lname,password,providerId} = req.body;
-    var rows = await prismaClient.users.count()
+    const salt = 9;
+    const passw = await bcrypt.hash(password,salt)
+    const prismaClient = new PrismaClient()
+    let rows = await prismaClient.users.count()
     if(rows < 11){
-        let response = await prismaClient.users.create({
-            data: {
-                'email':email,
-                'fname':fname,
-                'lname':lname,
-                'password':password,
-                'provider': providerId
-            }
-        })
-        if(response){
+        try{
+            await prismaClient.users.create({
+                data: {
+                    'email':email,
+                    'fname':fname,
+                    'lname':lname,
+                    'password':passw,
+                    'provider': providerId
+                }
+            })
             return res.status(200).json({
                 message:'User created successfully'
             })
+        }catch(error){
+            return res.status(409).json({
+                message:'User already exist,Please add different Email Id',error
+            })
         }
-        return res.status(409).json({
-            message:'User already exist,Please add different Email Id'
-        })
     }else{
         return res.status(400).json({
             message:'Reached max limit to create'
@@ -87,31 +101,61 @@ app.post('/oauth', async(req, res) => {
 app.post('/login', async(req, res) => {
     const {email,password} = (req.body);
     const prismaClient = new PrismaClient()
-    const user = await prismaClient.users.findUnique({
-        where:{
-            email
-        },
-    })
-    if(user){
-        const compare = await bcrypt.compare(password,user?.password)
-        if(compare) {
-            const token = jwt.sign({user:req?.body?.email},process.env.JWT_KEY,{expiresIn:'86400s'});
-            res.cookie('cid',token,{
-                httpOnly:true,
-                secure:true,
-                maxAge:86400000,
-                path:'/',
-                sameSite:'None',
-                partitioned: true
-            })
-            return res.status(200).json({message:'User logged In successfully!'});
-        };
-        return res.status(403).json({message:'Invalid credentials'});
+    try {
+        // Find the user by email
+        const user = await prismaClient.users.findUnique({
+            where: {
+                email: email, // assuming email is defined somewhere before
+            },
+        });
+    
+        // Check if the user exists
+        if (!user) {
+            return res.status(401).json({ message: 'User does not exist' });
+        }
+    
+        // Verify the password
+        await bcrypt.compare(password, user.password) // make sure password is defined
+        .then((response)=>{
+            if(response){
+                // Generate JWT token
+                const token = jwt.sign({ user: email }, process.env.JWT_KEY, { expiresIn: '86400s' });
+    
+                // Set the token as a cookie
+                res.cookie('cid', token, {
+                    httpOnly: true,
+                    secure: true,
+                    maxAge: 86400000, // 1 day in milliseconds
+                    path: '/',
+                    sameSite: 'None', // required for cross-site cookies
+                    partitioned: true,
+                });
+                return res.status(200).json({ message: 'User logged in successfully!' });
+            }
+            return res.status(403).json({ message: 'Invalid credentials' });
+        }).catch(error=>{
+            console.error('Error comparing passwords:', error);
+            return res.status(500).json({ message: 'Error during login process' });
+        })
+    } catch (error) {
+        console.error('Error finding user:', error);
+        return res.status(500).json({ message: 'Error finding user' });
     }
-    return res.status(401).json({message:'User does not exist'});
+    
 });
-
-app.get('/logout', async (req, res) => {
+// app.use('/firebseConfig',()=>{
+//     MongoClient.connect(url, function(err, db) {
+//         if (err) throw err;
+//         var dbo = db.db("mydb");
+//         var myobj = { name: "Company Inc", address: "Highway 37" };
+//         dbo.collection("customers").insertOne(myobj, function(err, res) {
+//           if (err) throw err;
+//           console.log("1 document inserted");
+//           db.close();
+//         });
+//     });
+// })
+app.post('/logout', async (req, res) => {
     try {
         // Clear the cookie
         res.clearCookie('cid', {
@@ -139,7 +183,7 @@ const authenticateJWT = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
-        res.status(401).json({ message: 'Invalid token' });
+        res.status(401).json({ message: 'Unauthorized access' });
     }
 };
 
