@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const {PrismaClient} = require('@prisma/client');
 const cookieParser = require('cookie-parser');
+const serverless = require('serverless-http')
+
 // const MongoClient = require('mongodb').MongoClient;
 // const url = process.env.DATABASE_URL;
 
@@ -12,6 +14,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
+const router = express.Router()
 const PORT = process.env.PORT || 5000;
 
 
@@ -23,14 +26,15 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
 }));
 
+
 // Secret key for JWT
 const JWT_SECRET = process.env.JWT_KEY;
 
 // Register endpoint
-app.get('/',(req,res)=>{
+router.get('/',(req,res)=>{
     res.send('Hello')
 })
-app.post('/signup', async(req, res) => {
+router.post('/signup', async(req, res) => {
     const {email,fname,lname,password} = req.body;
     const salt = 9;
     const passw = await bcrypt.hash(password,salt)
@@ -64,7 +68,7 @@ app.post('/signup', async(req, res) => {
 
     }
 });
-app.post('/oauth', async(req, res) => {
+router.post('/oauth', async(req, res) => {
     const {email,fname,lname,password,providerId} = req.body;
     const salt = 9;
     const passw = await bcrypt.hash(password,salt)
@@ -98,7 +102,7 @@ app.post('/oauth', async(req, res) => {
 });
 
 // Login endpoint
-app.post('/login', async(req, res) => {
+router.post('/login', async(req, res) => {
     const {email,password} = (req.body);
     const prismaClient = new PrismaClient()
     try {
@@ -143,19 +147,7 @@ app.post('/login', async(req, res) => {
     }
     
 });
-// app.use('/firebseConfig',()=>{
-//     MongoClient.connect(url, function(err, db) {
-//         if (err) throw err;
-//         var dbo = db.db("mydb");
-//         var myobj = { name: "Company Inc", address: "Highway 37" };
-//         dbo.collection("customers").insertOne(myobj, function(err, res) {
-//           if (err) throw err;
-//           console.log("1 document inserted");
-//           db.close();
-//         });
-//     });
-// })
-app.post('/logout', async (req, res) => {
+router.post('/logout', async (req, res) => {
     try {
         // Clear the cookie
         res.clearCookie('cid', {
@@ -188,10 +180,16 @@ const authenticateJWT = (req, res, next) => {
 };
 
 // Protected route
-app.get('/protected', authenticateJWT, (req, res) => {
+router.get('/protected', authenticateJWT, (req, res) => {
     res.status(200).json({ message: 'You have accessed a protected route' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+
+app.use('/.netlify/functions/api',router)
+
+module.exports = app
+module.exports.handler = serverless(app)
+
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });

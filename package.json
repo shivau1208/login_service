@@ -19,7 +19,8 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "redis": "^4.6.15",
-    "netlify-lambda":"2.0.16"
+    "netlify-lambda":"2.0.16",
+    "serverless-http": "3.2.0"
   },
   "devDependencies": {
     "prisma": "^5.21.1"
