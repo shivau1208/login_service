@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cookieParser()); // Use cookie-parser middleware
 app.use(bodyParser.json());
 app.use(cors({
-    origin: ['https://login-service-xwdp.onrender.com','https://login-service.netlify.app','http://localhost:3000','https://buymybeer.vercel.app'], 
+    origin: ['https://login-service-xwdp.onrender.com','https://login-service.netlify.app','http://localhost:3000','https://bearthebeer.vercel.app'], 
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'] // specifying allowed headers
 }));
