@@ -134,7 +134,12 @@ router.post('/login', async(req, res) => {
                     sameSite: 'None', // required for cross-site cookies
                     partitioned: true,
                 });
-                return res.status(200).json({ message: 'User logged in successfully!',user:{email:user.email,localId:user._id,firstName:user.fname,lastName:user.lname}});
+                return res.status(200).json({ message: 'User logged in successfully!',user:{
+                    email:user.email,
+                    localId:user._id ? user._id.toString() : null, 
+                    firstName:user.fname,
+                    lastName:user.lname
+                }});
             }
             return res.status(403).json({ message: 'Invalid credentials' });
         }).catch(error=>{
