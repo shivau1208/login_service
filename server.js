@@ -136,7 +136,7 @@ router.post('/login', async(req, res) => {
                 });
                 return res.status(200).json({ message: 'User logged in successfully!',user:{
                     email:user.email,
-                    localId:user._id ? user._id.toString() : null, 
+                    localId:user.id || null, 
                     firstName:user.fname,
                     lastName:user.lname
                 }});
