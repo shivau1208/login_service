@@ -76,41 +76,18 @@ router.post('/oauth', async(req, res) => {
     let rows = await prismaClient.users.count()
     if(rows < 11){
         try{
-            const user = await prismaClient.users.findUnique({
-                where: {
-                    email: email, // assuming email is defined somewhere before
-                },
-            });
-            if(!user){
-                const newUser = await prismaClient.users.create({
-                    data: {
-                        'email':email,
-                        'fname':fname,
-                        'lname':lname,
-                        'password':passw,
-                        'provider': providerId
-                    },
-                    select: {
-                        email: true,
-                        fname:true,
-                        lname:true,
-                        id:true
-                      },
-                })
-
-                return res.status(200).json({ message: 'User logged in successfully!', user:{
-                        email:newUser.email,
-                        localId:newUser.id || null, 
-                        firstName:newUser.fname,
-                        lastName:newUser.lname
-                }})
-            }
-            return res.status(200).json({ message: 'User logged in successfully!', user:{
-                    email:user.email,
-                    localId:user.id || null, 
-                    firstName:user.fname,
-                    lastName:user.lname
-            }})
+             await prismaClient.users.create({
+                data: {
+                    'email':email,
+                    'fname':fname,
+                    'lname':lname,
+                    'password':passw,
+                    'provider': providerId
+                }
+            })
+            return res.status(200).json({
+                message:'User created successfully'
+            })
         }catch(error){
             return res.status(409).json({
                 message:'User already exist,Please add different Email Id',error
