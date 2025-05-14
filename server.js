@@ -129,7 +129,7 @@ router.post('/login', async(req, res) => {
                 res.cookie('cid', token, {
                     httpOnly: true,
                     secure: true,
-                    maxAge: 86400000, // 1 day in milliseconds
+                    maxAge: 86400000 * 365, // 1 day in milliseconds
                     path: '/',
                     sameSite: 'None', // required for cross-site cookies
                     partitioned: true,
