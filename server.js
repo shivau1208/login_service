@@ -70,7 +70,7 @@ router.post("/oauth", async (req, res) => {
 
 				// Set the token as a cookie
 				res.cookie("cid", signedToken, {
-					httpOnly: true,
+					// httpOnly: true,
 					secure: true,
 					maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 					path: "/",
@@ -96,7 +96,7 @@ router.post("/oauth", async (req, res) => {
 		
 		// Set the token as a cookie
 		res.cookie("cid", signedToken, {
-			httpOnly: true,
+			// httpOnly: true,
 			secure: true,
 			maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 			path: "/",
