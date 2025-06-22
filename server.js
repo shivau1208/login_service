@@ -75,7 +75,7 @@ router.post("/oauth", async (req, res) => {
 					maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 					path: "/",
 					sameSite: "None", // required for cross-site cookies
-					partitioned: true,
+					// partitioned: true,
 				});
 				return res.status(200).json({
 					message: "User logged in successfully!",
@@ -101,7 +101,7 @@ router.post("/oauth", async (req, res) => {
 			maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 			path: "/",
 			sameSite: "None", // required for cross-site cookies
-			partitioned: true,
+			// partitioned: true,
 		});
 		return res.status(200).json({
 			message: "User logged in successfully!",
