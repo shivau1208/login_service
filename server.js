@@ -70,13 +70,12 @@ router.post("/oauth", async (req, res) => {
 
 				// Set the token as a cookie
 				res.cookie("cid", signedToken, {
-					// httpOnly: true,
+					httpOnly: true,
 					secure: true,
 					maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 					path: "/",
 					sameSite: "None", // required for cross-site cookies
-					domain: "thebrewedbeers.vercel.app",
-					// partitioned: true,
+					partitioned: true,
 				});
 				return res.status(200).json({
 					message: "User logged in successfully!",
@@ -97,13 +96,12 @@ router.post("/oauth", async (req, res) => {
 		
 		// Set the token as a cookie
 		res.cookie("cid", signedToken, {
-			// httpOnly: true,
+			httpOnly: true,
 			secure: true,
 			maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 			path: "/",
 			sameSite: "None", // required for cross-site cookies
-			domain: "thebrewedbeers.vercel.app",
-			// partitioned: true,
+			partitioned: true,
 		});
 		return res.status(200).json({
 			message: "User logged in successfully!",
