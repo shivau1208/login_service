@@ -75,6 +75,7 @@ router.post("/oauth", async (req, res) => {
 					maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 					path: "/",
 					sameSite: "None", // required for cross-site cookies
+					domain: "thebrewedbeers.vercel.app",
 					// partitioned: true,
 				});
 				return res.status(200).json({
@@ -101,6 +102,7 @@ router.post("/oauth", async (req, res) => {
 			maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 			path: "/",
 			sameSite: "None", // required for cross-site cookies
+			domain: "thebrewedbeers.vercel.app",
 			// partitioned: true,
 		});
 		return res.status(200).json({
