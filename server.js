@@ -18,7 +18,7 @@ app.use(cookieParser()); // Use cookie-parser middleware
 app.use(express.json());
 app.use(
 	cors({
-		origin: ["https://login-service.netlify.app", /^http:\/\/localhost:\d+$/, "https://thebrewedbeers.vercel.app"],
+		origin: ["https://login-service.netlify.app", /^http:\/\/localhost:\d+$/, "https://thebrewedbeers.vercel.app","https://commentservice-qtdfocztwa-el.a.run.app","https://comments-section-frontend-qtdfocztwa-el.a.run.app"],
 		credentials: true,
 		allowedHeaders: ["Content-Type", "Authorization"],
 	})
@@ -70,7 +70,7 @@ router.post("/oauth", async (req, res) => {
 
 				// Set the token as a cookie
 				res.cookie("cid", signedToken, {
-					// httpOnly: true,
+					httpOnly: true,
 					secure: true,
 					maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 					path: "/",
@@ -96,7 +96,7 @@ router.post("/oauth", async (req, res) => {
 		
 		// Set the token as a cookie
 		res.cookie("cid", signedToken, {
-			// httpOnly: true,
+			httpOnly: true,
 			secure: true,
 			maxAge: 1000 * 60 * 60 * 24 * 400, // 400 days in milliseconds
 			path: "/",
