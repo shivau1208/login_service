@@ -21,6 +21,7 @@ app.use(
 		origin: ["https://login-service.netlify.app", /^http:\/\/localhost:\d+$/, "https://thebrewedbeers.vercel.app","https://commentservice-qtdfocztwa-el.a.run.app","https://comments-section-frontend-qtdfocztwa-el.a.run.app"],
 		credentials: true,
 		allowedHeaders: ["Content-Type", "Authorization"],
+		exposedHeaders: ['X-Auth-Token']
 	})
 );
 
@@ -69,6 +70,7 @@ router.post("/oauth", async (req, res) => {
 				const signedToken = jwt.sign({ email: oauthUser.email, uid: oauthUser.uid, role: "USER" }, process.env.JWT_KEY, { expiresIn: "400d" });
 
 				// Set the token as a cookie
+				res.set('X-Auth-Token', signedToken);
 				res.cookie("cid", signedToken, {
 					// httpOnly: true,
 					secure: true,
@@ -95,6 +97,7 @@ router.post("/oauth", async (req, res) => {
 		const signedToken = jwt.sign({ email: user.email, uid: user.uid, role: user.role }, process.env.JWT_KEY, { expiresIn: "400d" });
 		
 		// Set the token as a cookie
+		res.set('X-Auth-Token', signedToken);
 		res.cookie("cid", signedToken, {
 			// httpOnly: true,
 			secure: true,
